@@ -36,6 +36,27 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Orange variants for attendance app
+        orange: {
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c',
+          500: '#f97316', // Primary orange
+          600: '#ea580c',
+          700: '#c2410c',
+          800: '#9a3412',
+          900: '#7c2d12',
+        },
+        // Dracula accent colors
+        dracula: {
+          purple: '#bd93f9',
+          pink: '#ff79c6',
+          cyan: '#8be9fd',
+          green: '#50fa7b',
+          yellow: '#f1fa8c',
+        },
       },
     },
   },
