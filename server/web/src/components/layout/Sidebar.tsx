@@ -8,7 +8,7 @@ export const Sidebar: React.FC = () => {
 
   const mainMenuItems = [
     { name: 'Dashboard', path: ROUTES.DASHBOARD, icon: BarChart3, badge: null },
-    { name: 'Attendance', path: ROUTES.ATTENDANCE, icon: Target, badge: 'Live' },
+    { name: 'Attendance', path: ROUTES.ATTENDANCE, icon: Target, badge: null },
     { name: 'Classes', path: ROUTES.CLASSES, icon: GraduationCap, badge: null },
     { name: 'Students', path: '/students', icon: Users, badge: null },
   ];

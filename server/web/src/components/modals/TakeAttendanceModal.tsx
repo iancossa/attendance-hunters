@@ -4,7 +4,9 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Card, CardContent } from '../ui/card';
-import { X, QrCode, Users, CheckCircle, ArrowRight, ArrowLeft, RefreshCw, AlertTriangle, Search } from 'lucide-react';
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '../ui/table';
+import { X, QrCode, Users, CheckCircle, ArrowRight, ArrowLeft, RefreshCw, AlertTriangle, Search, Maximize, Minimize } from 'lucide-react';
+import { MOCK_STUDENTS, Student } from '../../data/mockStudents';
 
 interface TakeAttendanceModalProps {
   isOpen: boolean;
@@ -14,13 +16,6 @@ interface TakeAttendanceModalProps {
 
 type Step = 'scanner' | 'selection' | 'mode' | 'qr' | 'manual' | 'confirmation' | 'review';
 type AttendanceMode = 'qr' | 'manual' | 'hybrid';
-
-interface Student {
-  id: string;
-  name: string;
-  rollNumber: string;
-  present: boolean;
-}
 
 export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen, onClose, initialMode = 'attendance' }) => {
   const [step, setStep] = useState<Step>(initialMode === 'scanner' ? 'scanner' : 'selection');
@@ -35,6 +30,8 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
   const [students, setStudents] = useState<Student[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isScanning, setIsScanning] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [rollNumberInput, setRollNumberInput] = useState('');
 
   const courses = [
     { id: 'cs101', name: 'CSE101 – Data Structures', students: 50 },
@@ -46,7 +43,13 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
   const sections = ['A', 'B', 'C', 'D'];
   const sessionTypes = ['Lecture', 'Lab', 'Seminar', 'Tutorial'];
 
-  const currentDateTime = new Date().toLocaleString();
+  const currentDateTime = new Date().toLocaleString('en-US', { 
+    year: 'numeric', 
+    month: '2-digit', 
+    day: '2-digit', 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
   const selectedCourseData = courses.find(c => c.id === selectedCourse);
 
   // Timer effect for QR code
@@ -91,19 +94,7 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
   };
 
   const generateStudentList = () => {
-    const courseData = courses.find(c => c.id === selectedCourse);
-    if (!courseData) return;
-    
-    const studentList: Student[] = [];
-    for (let i = 1; i <= courseData.students; i++) {
-      studentList.push({
-        id: `${selectedCourse}-${i}`,
-        name: `Student ${i.toString().padStart(2, '0')}`,
-        rollNumber: `${selectedCourse.toUpperCase()}-${selectedSection}-${i.toString().padStart(3, '0')}`,
-        present: false
-      });
-    }
-    setStudents(studentList);
+    setStudents(MOCK_STUDENTS.map(student => ({ ...student, present: false })));
   };
 
   const handleNext = () => {
@@ -151,9 +142,18 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
     setStep('confirmation');
   };
 
+  const handleRollNumberSubmit = () => {
+    const rollNumbers = rollNumberInput.split(',').map(num => num.trim());
+    setStudents(prev => prev.map(student => 
+      rollNumbers.includes(student.rollNumber) ? { ...student, present: true } : student
+    ));
+    setRollNumberInput('');
+  };
+
   const filteredStudents = students.filter(student => 
     student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.rollNumber.toLowerCase().includes(searchQuery.toLowerCase())
+    student.rollNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    student.enrollmentNumber.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleScan = () => {
@@ -179,6 +179,8 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
     setStudents([]);
     setSearchQuery('');
     setIsScanning(false);
+    setIsFullscreen(false);
+    setRollNumberInput('');
   };
 
   const handleClose = () => {
@@ -189,8 +191,8 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/20 dark:bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-background rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+    <div className={`fixed z-50 ${isFullscreen ? 'inset-0 bg-background' : 'inset-0 bg-black/20 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center p-4'}`}>
+      <div className={`${isFullscreen ? 'h-full w-full' : 'bg-background rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden'} flex flex-col`}>
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div className="flex items-center gap-3">
@@ -204,12 +206,17 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
               <p className="text-sm text-muted-foreground">{currentDateTime}</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleClose}>
-            <X className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setIsFullscreen(!isFullscreen)}>
+              {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleClose}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
-        <div className="p-6">
+        <div className={`${isFullscreen ? 'flex-1' : ''} p-6 overflow-y-auto`}>
           {/* QR Scanner Step */}
           {step === 'scanner' && (
             <div className="text-center space-y-6">
@@ -398,39 +405,67 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
                 </div>
               </div>
               
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search students..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search students..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter roll numbers (1,2,3...)"
+                    value={rollNumberInput}
+                    onChange={(e) => setRollNumberInput(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button 
+                    onClick={handleRollNumberSubmit}
+                    disabled={!rollNumberInput.trim()}
+                    size="sm"
+                  >
+                    Mark Present
+                  </Button>
+                </div>
               </div>
 
-              <div className="max-h-96 overflow-y-auto space-y-2">
-                {filteredStudents.map((student) => (
-                  <div 
-                    key={student.id}
-                    className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={student.present}
-                        onChange={() => toggleStudentAttendance(student.id)}
-                        className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary"
-                      />
-                      <div>
-                        <p className="font-medium">{student.name}</p>
-                        <p className="text-sm text-muted-foreground">{student.rollNumber}</p>
-                      </div>
-                    </div>
-                    <Badge variant={student.present ? 'default' : 'secondary'}>
-                      {student.present ? 'Present' : 'Absent'}
-                    </Badge>
-                  </div>
-                ))}
+              <div className="rounded-lg border border-border overflow-hidden max-h-96 overflow-y-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead className="w-12">Select</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Enrollment No.</TableHead>
+                      <TableHead>Roll No.</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStudents.map((student) => (
+                      <TableRow key={student.id} className="hover:bg-muted/30">
+                        <TableCell>
+                          <input
+                            type="checkbox"
+                            checked={student.present}
+                            onChange={() => toggleStudentAttendance(student.id)}
+                            className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary"
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium">{student.name}</TableCell>
+                        <TableCell className="text-muted-foreground">{student.enrollmentNumber}</TableCell>
+                        <TableCell className="text-muted-foreground">{student.rollNumber}</TableCell>
+                        <TableCell>
+                          <Badge variant={student.present ? 'default' : 'secondary'}>
+                            {student.present ? 'Present' : 'Absent'}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
 
               <div className="flex justify-between pt-4 border-t border-border">
@@ -464,29 +499,40 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
                 />
               </div>
 
-              <div className="max-h-96 overflow-y-auto space-y-2">
-                {filteredStudents.map((student) => (
-                  <div 
-                    key={student.id}
-                    className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={student.present}
-                        onChange={() => toggleStudentAttendance(student.id)}
-                        className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary"
-                      />
-                      <div>
-                        <p className="font-medium">{student.name}</p>
-                        <p className="text-sm text-muted-foreground">{student.rollNumber}</p>
-                      </div>
-                    </div>
-                    <Badge variant={student.present ? 'default' : 'secondary'}>
-                      {student.present ? 'Present' : 'Absent'}
-                    </Badge>
-                  </div>
-                ))}
+              <div className="rounded-lg border border-border overflow-hidden max-h-96 overflow-y-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead className="w-12">Select</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Enrollment No.</TableHead>
+                      <TableHead>Roll No.</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStudents.map((student) => (
+                      <TableRow key={student.id} className="hover:bg-muted/30">
+                        <TableCell>
+                          <input
+                            type="checkbox"
+                            checked={student.present}
+                            onChange={() => toggleStudentAttendance(student.id)}
+                            className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary"
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium">{student.name}</TableCell>
+                        <TableCell className="text-muted-foreground">{student.enrollmentNumber}</TableCell>
+                        <TableCell className="text-muted-foreground">{student.rollNumber}</TableCell>
+                        <TableCell>
+                          <Badge variant={student.present ? 'default' : 'secondary'}>
+                            {student.present ? 'Present' : 'Absent'}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
 
               <div className="flex justify-between pt-4 border-t border-border">
