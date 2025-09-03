@@ -5,11 +5,15 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Badge } from '../../components/ui/badge';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '../../components/ui/table';
-import { QrCode, UserCheck, Users, UserX, Clock, Search, Filter, Download, Edit } from 'lucide-react';
+import { QrCode, UserCheck, Users, UserX, Clock, Search, Filter, Download, Edit, MoreVertical, Eye, History, MessageSquare } from 'lucide-react';
+import { TakeAttendanceModal } from '../../components/modals/TakeAttendanceModal';
 
 export const AttendancePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'scanner' | 'attendance'>('attendance');
   
   const attendanceRecords = [
     { id: 1, student: 'John Doe', class: 'CS101', date: '2024-01-15', status: 'present', time: '09:15 AM' },
@@ -34,11 +38,24 @@ export const AttendancePage: React.FC = () => {
             <p className="text-muted-foreground">Track and manage student attendance</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/10">
+            <Button 
+              variant="outline" 
+              className="border-primary/20 text-primary hover:bg-primary/10"
+              onClick={() => {
+                setModalMode('scanner');
+                setShowModal(true);
+              }}
+            >
               <QrCode className="h-4 w-4 mr-2" />
               QR Scanner
             </Button>
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button 
+              className="bg-primary hover:bg-primary/90"
+              onClick={() => {
+                setModalMode('attendance');
+                setShowModal(true);
+              }}
+            >
               <UserCheck className="h-4 w-4 mr-2" />
               Mark Attendance
             </Button>
@@ -181,9 +198,52 @@ export const AttendancePage: React.FC = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <Edit className="h-4 w-4" />
-                        </Button>
+                        <div className="relative">
+                          <button 
+                            className="h-8 w-8 p-0 hover:bg-muted/80 transition-colors rounded-md flex items-center justify-center border border-transparent hover:border-border"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenDropdown(openDropdown === record.id ? null : record.id);
+                            }}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </button>
+                          {openDropdown === record.id && (
+                            <>
+                              <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                              <div className="absolute right-0 top-8 mt-1 w-48 bg-background border border-border rounded-lg shadow-lg z-50 py-1 animate-in slide-in-from-top-2">
+                                <button 
+                                  onClick={() => setOpenDropdown(null)} 
+                                  className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-left rounded-sm"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                  View Profile
+                                </button>
+                                <button 
+                                  onClick={() => setOpenDropdown(null)} 
+                                  className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-left rounded-sm"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                  Edit Details
+                                </button>
+                                <button 
+                                  onClick={() => setOpenDropdown(null)} 
+                                  className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-left rounded-sm"
+                                >
+                                  <History className="h-4 w-4" />
+                                  Attendance History
+                                </button>
+                                <button 
+                                  onClick={() => setOpenDropdown(null)} 
+                                  className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-left rounded-sm"
+                                >
+                                  <MessageSquare className="h-4 w-4" />
+                                  Send Message
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -201,6 +261,12 @@ export const AttendancePage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+      
+      <TakeAttendanceModal 
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        initialMode={modalMode}
+      />
     </Layout>
   );
 };

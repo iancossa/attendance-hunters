@@ -5,6 +5,7 @@ export const ROUTES = {
   DASHBOARD: '/',
   ATTENDANCE: '/attendance',
   CLASSES: '/classes',
+  STUDENTS: '/students',
   REPORTS: '/reports',
   LEADERBOARD: '/leaderboard',
   SETTINGS: '/settings',

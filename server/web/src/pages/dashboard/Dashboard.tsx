@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Layout } from '../../components/layout/Layout';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Progress } from '../../components/ui/progress';
+import { TakeAttendanceModal } from '../../components/modals/TakeAttendanceModal';
 import { TrendingUp, Users, Calendar, AlertTriangle, Plus } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
+  const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
   return (
     <Layout>
       <div className="space-y-6">
@@ -15,7 +17,10 @@ export const Dashboard: React.FC = () => {
             <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
             <p className="text-muted-foreground">Welcome back, here's what's happening today</p>
           </div>
-          <Button className="bg-primary hover:bg-primary/90">
+          <Button 
+            className="bg-primary hover:bg-primary/90"
+            onClick={() => setIsAttendanceModalOpen(true)}
+          >
             <Plus className="h-4 w-4 mr-2" />
             Take Attendance
           </Button>
@@ -169,6 +174,11 @@ export const Dashboard: React.FC = () => {
           </Card>
         </div>
       </div>
+      
+      <TakeAttendanceModal 
+        isOpen={isAttendanceModalOpen}
+        onClose={() => setIsAttendanceModalOpen(false)}
+      />
     </Layout>
   );
 };

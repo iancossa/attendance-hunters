@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Dashboard } from './pages/dashboard/Dashboard';
 import { AttendancePage } from './pages/attendance/AttendancePage';
 import { ClassesPage } from './pages/classes/ClassesPage';
+import { StudentsPage } from './pages/students/StudentsPage';
 import { ReportsPage } from './pages/reports/ReportsPage';
 import { LeaderboardPage } from './pages/leaderboard/LeaderboardPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
@@ -31,6 +32,7 @@ function App() {
         <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
         <Route path={ROUTES.ATTENDANCE} element={<AttendancePage />} />
         <Route path={ROUTES.CLASSES} element={<ClassesPage />} />
+        <Route path={ROUTES.STUDENTS} element={<StudentsPage />} />
         <Route path={ROUTES.REPORTS} element={<ReportsPage />} />
         <Route path={ROUTES.LEADERBOARD} element={<LeaderboardPage />} />
         <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
