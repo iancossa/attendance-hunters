@@ -1,30 +1,34 @@
 import React from 'react';
 import { ROUTES } from '../../constants';
+import { BarChart3, CheckSquare, GraduationCap, FileText, Trophy, Settings } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
   const menuItems = [
-    { name: 'Dashboard', path: ROUTES.DASHBOARD, icon: '📊' },
-    { name: 'Attendance', path: ROUTES.ATTENDANCE, icon: '✅' },
-    { name: 'Classes', path: ROUTES.CLASSES, icon: '🏫' },
-    { name: 'Reports', path: ROUTES.REPORTS, icon: '📈' },
-    { name: 'Leaderboard', path: ROUTES.LEADERBOARD, icon: '🏆' },
-    { name: 'Settings', path: ROUTES.SETTINGS, icon: '⚙️' },
+    { name: 'Dashboard', path: ROUTES.DASHBOARD, icon: BarChart3 },
+    { name: 'Attendance', path: ROUTES.ATTENDANCE, icon: CheckSquare },
+    { name: 'Classes', path: ROUTES.CLASSES, icon: GraduationCap },
+    { name: 'Reports', path: ROUTES.REPORTS, icon: FileText },
+    { name: 'Leaderboard', path: ROUTES.LEADERBOARD, icon: Trophy },
+    { name: 'Settings', path: ROUTES.SETTINGS, icon: Settings },
   ];
 
   return (
-    <aside className="w-64 bg-white dark:bg-gray-800 shadow-sm border-r border-gray-200 dark:border-gray-700 min-h-screen">
-      <nav className="mt-8">
-        <div className="px-4 space-y-2">
-          {menuItems.map((item) => (
-            <a
-              key={item.path}
-              href={item.path}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
-            >
-              <span className="mr-3">{item.icon}</span>
-              {item.name}
-            </a>
-          ))}
+    <aside className="w-56 bg-background border-r border-border">
+      <nav className="p-3">
+        <div className="space-y-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <a
+                key={item.path}
+                href={item.path}
+                className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-muted-foreground rounded-md hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <Icon className="h-4 w-4" />
+                {item.name}
+              </a>
+            );
+          })}
         </div>
       </nav>
     </aside>

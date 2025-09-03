@@ -10,3 +10,4 @@ export { Alert, AlertTitle, AlertDescription } from './alert';
 export { Progress } from './progress';
 export { Skeleton } from './skeleton';
 export { ThemeToggle } from './ThemeToggle';
+export { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './dropdown-menu';

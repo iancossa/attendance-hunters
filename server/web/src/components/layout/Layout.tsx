@@ -8,11 +8,11 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <Header />
       <div className="flex">
         <Sidebar />
-        <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
+        <main className="flex-1 p-4 lg:p-6">
           {children}
         </main>
       </div>

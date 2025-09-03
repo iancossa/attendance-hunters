@@ -6,15 +6,18 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored auth token and validate
     const token = localStorage.getItem('auth_token');
-    if (token) {
-      // Validate token and get user info
-      // This would typically make an API call
-      setLoading(false);
-    } else {
-      setLoading(false);
+    const role = localStorage.getItem('user_role');
+    
+    if (token && role) {
+      setUser({
+        id: '1',
+        email: 'admin@attendance.com',
+        name: 'Admin User',
+        role: role as 'student' | 'faculty' | 'admin'
+      });
     }
+    setLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
