@@ -98,9 +98,3 @@ content = """# Attendance Hunters – Frontend Development Plan (React)
 - **QR Scanner**: `react-qr-reader`.  
 - **Exports**: `jspdf`, `xlsx`.  
 """
-
-# Convert to markdown file
-output_path = "/mnt/data/Attendance Hunters.md"
-pypandoc.convert_text(content, 'md', format='md', outputfile=output_path, extra_args=['--standalone'])
-
-output_path
