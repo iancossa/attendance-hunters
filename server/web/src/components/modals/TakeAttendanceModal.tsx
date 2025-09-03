@@ -353,39 +353,77 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
 
           {/* Step 3: QR Code Display */}
           {step === 'qr' && (
-            <div className="text-center space-y-6">
-              <div className="p-8 bg-muted/30 rounded-xl">
-                {qrValue && (
-                  <div className="bg-white p-4 rounded-lg inline-block">
-                    <QRCode value={qrValue} size={200} />
-                  </div>
-                )}
-              </div>
-              
-              <div>
-                <div className={`text-2xl font-bold mb-2 ${
-                  timeLeft <= 30 ? 'text-red-500 animate-pulse' : 'text-primary'
-                }`}>
-                  Valid for {formatTime(timeLeft)}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* QR Code Section */}
+              <div className="text-center space-y-6">
+                <div className="p-8 bg-muted/30 rounded-xl">
+                  {qrValue && (
+                    <div className="bg-white p-4 rounded-lg inline-block">
+                      <QRCode value={qrValue} size={200} />
+                    </div>
+                  )}
                 </div>
-                <p className="text-muted-foreground mb-4">
-                  Students must scan this code with the Attendance Hunters app
-                </p>
-                <Badge className={`${sessionActive ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`}>
-                  {sessionActive ? 'Active Session' : 'Session Expired'}
-                </Badge>
+                
+                <div>
+                  <div className={`text-2xl font-bold mb-2 ${
+                    timeLeft <= 30 ? 'text-red-500 animate-pulse' : 'text-primary'
+                  }`}>
+                    Valid for {formatTime(timeLeft)}
+                  </div>
+                  <p className="text-muted-foreground mb-4">
+                    Students must scan this code with the Attendance Hunters app
+                  </p>
+                  <Badge className={`${sessionActive ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`}>
+                    {sessionActive ? 'Active Session' : 'Session Expired'}
+                  </Badge>
+                </div>
+
+                <div className="flex justify-center gap-3 flex-wrap">
+                  <Button variant="outline" onClick={handleBack} className="gap-2">
+                    <ArrowLeft className="h-4 w-4" /> Back
+                  </Button>
+                  <Button variant="outline" onClick={generateQRCode} className="gap-2">
+                    <RefreshCw className="h-4 w-4" /> Regenerate QR
+                  </Button>
+                  <Button variant="outline" onClick={() => setStep('manual')}>
+                    Switch to Manual
+                  </Button>
+                </div>
               </div>
 
-              <div className="flex justify-center gap-3">
-                <Button variant="outline" onClick={handleBack} className="gap-2">
-                  <ArrowLeft className="h-4 w-4" /> Back
-                </Button>
-                <Button variant="outline" onClick={generateQRCode} className="gap-2">
-                  <RefreshCw className="h-4 w-4" /> Regenerate QR
-                </Button>
-                <Button variant="outline" onClick={() => setStep('manual')}>
-                  Switch to Manual
-                </Button>
+              {/* Live Attendance List */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">Live Attendance</h3>
+                  <Badge variant="outline">
+                    {students.filter(s => s.present).length} / {students.length} Present
+                  </Badge>
+                </div>
+                
+                <div className="rounded-lg border border-border overflow-hidden max-h-96 overflow-y-auto">
+                  <div className="bg-muted/50 p-3 border-b border-border">
+                    <p className="text-sm font-medium">Students who have scanned:</p>
+                  </div>
+                  <div className="p-2 space-y-1">
+                    {students.filter(s => s.present).length === 0 ? (
+                      <p className="text-center text-muted-foreground py-8 text-sm">
+                        Waiting for students to scan...
+                      </p>
+                    ) : (
+                      students.filter(s => s.present).map((student) => (
+                        <div key={student.id} className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950/30 rounded-md border border-green-200 dark:border-green-800">
+                          <div>
+                            <p className="font-medium text-sm">{student.name}</p>
+                            <p className="text-xs text-muted-foreground">{student.rollNumber}</p>
+                          </div>
+                          <Badge className="bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400">
+                            Present
+                          </Badge>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}

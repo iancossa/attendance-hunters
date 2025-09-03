@@ -10,34 +10,41 @@ import { SettingsPage } from './pages/settings/SettingsPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { useAuth } from './hooks/useAuth';
 import { ROUTES } from './constants';
+import { Loading } from './components/ui/loading';
 
 function App() {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-background transition-all duration-300">
+        <Loading size="lg" fullScreen />
       </div>
     );
   }
 
   if (!isAuthenticated) {
-    return <LoginPage />;
+    return (
+      <div className="animate-in fade-in duration-300">
+        <LoginPage />
+      </div>
+    );
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
-        <Route path={ROUTES.ATTENDANCE} element={<AttendancePage />} />
-        <Route path={ROUTES.CLASSES} element={<ClassesPage />} />
-        <Route path={ROUTES.STUDENTS} element={<StudentsPage />} />
-        <Route path={ROUTES.REPORTS} element={<ReportsPage />} />
-        <Route path={ROUTES.LEADERBOARD} element={<LeaderboardPage />} />
-        <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
-      </Routes>
-    </Router>
+    <div className="animate-in fade-in duration-300">
+      <Router>
+        <Routes>
+          <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+          <Route path={ROUTES.ATTENDANCE} element={<AttendancePage />} />
+          <Route path={ROUTES.CLASSES} element={<ClassesPage />} />
+          <Route path={ROUTES.STUDENTS} element={<StudentsPage />} />
+          <Route path={ROUTES.REPORTS} element={<ReportsPage />} />
+          <Route path={ROUTES.LEADERBOARD} element={<LeaderboardPage />} />
+          <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 

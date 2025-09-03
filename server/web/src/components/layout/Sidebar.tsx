@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ROUTES } from '../../constants';
-import { BarChart3, CheckSquare, GraduationCap, FileText, Trophy, Settings, Users, Target } from 'lucide-react';
+import { BarChart3, GraduationCap, FileText, Trophy, Settings, Users, Target } from 'lucide-react';
 import { Badge } from '../ui/badge';
 
 export const Sidebar: React.FC = () => {
