@@ -1,9 +1,12 @@
 // Re-export all UI components
-export { default as Button } from './Button';
-export { default as Card } from './Card';
-export { default as Input } from './Input';
-export { default as Modal } from './Modal';
-export { default as Badge } from './Badge';
-export { default as Avatar } from './Avatar';
-export { default as Spinner } from './Spinner';
+export { Button } from './button';
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card';
+export { Input } from './input';
+export { Badge } from './badge';
+export { Avatar, AvatarImage, AvatarFallback } from './avatar';
+export { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from './table';
+export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
+export { Alert, AlertTitle, AlertDescription } from './alert';
+export { Progress } from './progress';
+export { Skeleton } from './skeleton';
 export { ThemeToggle } from './ThemeToggle';
