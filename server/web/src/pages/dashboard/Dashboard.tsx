@@ -52,8 +52,8 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Present Students</p>
-                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">{summary?.presentStudents || 342}</div>
-                  <p className="text-xs text-muted-foreground mt-1">out of {summary?.totalStudents || 402} total</p>
+                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">{summary?.presentStudents || 25}</div>
+                  <p className="text-xs text-muted-foreground mt-1">out of {summary?.totalStudents || 28} total</p>
                 </div>
                 <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
                   <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -67,8 +67,8 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Active Classes</p>
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">12</div>
-                  <p className="text-xs text-muted-foreground mt-1">3 in session now</p>
+                  <div className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">2</div>
+                  <p className="text-xs text-muted-foreground mt-1">2 active courses</p>
                 </div>
                 <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
                   <Calendar className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -82,7 +82,7 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Alerts</p>
-                  <div className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">{summary?.alerts || 5}</div>
+                  <div className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">{summary?.alerts || 3}</div>
                   <p className="text-xs text-muted-foreground mt-1">Low attendance warnings</p>
                 </div>
                 <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
@@ -149,22 +149,22 @@ export const Dashboard: React.FC = () => {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800">
                 <div>
-                  <p className="font-medium text-green-800 dark:text-green-300">CS101 - Data Structures</p>
-                  <p className="text-sm text-green-600 dark:text-green-400">Attendance marked - 45/50 present</p>
+                  <p className="font-medium text-green-800 dark:text-green-300">303105221 - Digital Electronics Laboratory</p>
+                  <p className="text-sm text-green-600 dark:text-green-400">Attendance marked - 14/16 present</p>
                 </div>
                 <Badge className="bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700">90%</Badge>
               </div>
               <div className="flex items-center justify-between p-3 bg-primary/5 dark:bg-primary/10 rounded-lg border border-primary/20 dark:border-primary/30">
                 <div>
-                  <p className="font-medium text-primary">MATH201 - Calculus II</p>
-                  <p className="text-sm text-primary/70">Attendance marked - 38/42 present</p>
+                  <p className="font-medium text-primary">303191202 - Discrete Mathematics</p>
+                  <p className="text-sm text-primary/70">Attendance marked - 11/12 present</p>
                 </div>
                 <Badge className="bg-primary/10 dark:bg-primary/20 text-primary border-primary/30 dark:border-primary/50">90%</Badge>
               </div>
               <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
                 <div>
-                  <p className="font-medium text-yellow-800 dark:text-yellow-300">ENG101 - English Literature</p>
-                  <p className="text-sm text-yellow-600 dark:text-yellow-400">Attendance marked - 28/35 present</p>
+                  <p className="font-medium text-yellow-800 dark:text-yellow-300">303105221 - Digital Electronics Laboratory</p>
+                  <p className="text-sm text-yellow-600 dark:text-yellow-400">Lab session - 13/16 present</p>
                 </div>
                 <Badge className="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700">80%</Badge>
               </div>

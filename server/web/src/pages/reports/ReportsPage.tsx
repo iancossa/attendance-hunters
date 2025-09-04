@@ -11,6 +11,7 @@ import { FileText, Download, TrendingUp, Users, AlertTriangle, Calendar, Search,
 import { AttendanceChart, ClassPerformanceChart } from '../../components/charts';
 import { exportToExcel, exportToPDF } from '../../utils/exportUtils';
 import { useAppStore } from '../../store';
+import { COURSES, MOCK_STUDENTS } from '../../data/mockStudents';
 
 interface ReportData {
   id: string;
@@ -27,42 +28,72 @@ const mockReports: ReportData[] = [
   {
     id: '1',
     type: 'Weekly Report',
-    class: 'CS101 - Data Structures',
+    class: '303105221 - Digital Electronics Laboratory',
     period: 'Jan 8-14, 2024',
-    attendance: 94.2,
-    students: 45,
+    attendance: 84.2,
+    students: 16,
     generated: '2024-01-15',
     status: 'Generated'
   },
   {
     id: '2',
     type: 'Monthly Report',
-    class: 'MATH201 - Calculus II',
+    class: '303191202 - Discrete Mathematics',
     period: 'December 2023',
-    attendance: 89.8,
-    students: 38,
+    attendance: 87.8,
+    students: 12,
     generated: '2024-01-01',
     status: 'Generated'
   },
   {
     id: '3',
     type: 'Semester Report',
-    class: 'ENG101 - English Literature',
+    class: '303201301 - Data Structures and Algorithms',
     period: 'Fall 2023',
-    attendance: 82.5,
-    students: 52,
+    attendance: 89.5,
+    students: 8,
     generated: '2024-01-10',
     status: 'Processing'
   },
   {
     id: '4',
     type: 'Weekly Report',
-    class: 'PHY101 - Physics I',
+    class: '303105222 - Microprocessor Systems',
     period: 'Jan 1-7, 2024',
-    attendance: 78.3,
-    students: 41,
+    attendance: 86.3,
+    students: 6,
     generated: '2024-01-08',
     status: 'Generated'
+  },
+  {
+    id: '5',
+    type: 'Monthly Report',
+    class: '303191203 - Linear Algebra',
+    period: 'December 2023',
+    attendance: 91.0,
+    students: 4,
+    generated: '2024-01-05',
+    status: 'Generated'
+  },
+  {
+    id: '6',
+    type: 'Weekly Report',
+    class: '303201302 - Database Management Systems',
+    period: 'Jan 8-14, 2024',
+    attendance: 85.7,
+    students: 4,
+    generated: '2024-01-15',
+    status: 'Generated'
+  },
+  {
+    id: '7',
+    type: 'Semester Report',
+    class: '303105223 - Communication Systems',
+    period: 'Fall 2023',
+    attendance: 88.5,
+    students: 4,
+    generated: '2024-01-12',
+    status: 'Processing'
   }
 ];
 
@@ -169,7 +200,7 @@ export const ReportsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Reports</p>
-                  <div className="text-3xl font-bold text-primary mt-2">156</div>
+                  <div className="text-3xl font-bold text-primary mt-2">{mockReports.length}</div>
                   <p className="text-xs text-muted-foreground mt-1">generated this year</p>
                 </div>
                 <div className="p-3 bg-primary/10 rounded-full">
@@ -184,7 +215,7 @@ export const ReportsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Overall Attendance</p>
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">87.5%</div>
+                  <div className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">{Math.round(MOCK_STUDENTS.reduce((acc, s) => acc + (s.attendance || 0), 0) / MOCK_STUDENTS.length)}%</div>
                   <p className="text-xs text-muted-foreground mt-1">semester average</p>
                 </div>
                 <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
@@ -199,8 +230,8 @@ export const ReportsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Best Performing</p>
-                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">CS101</div>
-                  <p className="text-xs text-muted-foreground mt-1">94.2% attendance</p>
+                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">303191203</div>
+                  <p className="text-xs text-muted-foreground mt-1">91.0% attendance</p>
                 </div>
                 <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
                   <BarChart3 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -214,7 +245,7 @@ export const ReportsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">At-Risk Students</p>
-                  <div className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">23</div>
+                  <div className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">{MOCK_STUDENTS.filter(s => (s.attendance || 0) < 75).length}</div>
                   <p className="text-xs text-muted-foreground mt-1">below 75% attendance</p>
                 </div>
                 <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
@@ -386,10 +417,9 @@ export const ReportsPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <ClassPerformanceChart data={[
-                { class: 'CS', attendance: 92 },
-                { class: 'Math', attendance: 88 },
-                { class: 'Physics', attendance: 84 },
-                { class: 'English', attendance: 79 }
+                { class: 'Electronics', attendance: 84 },
+                { class: 'Computer Science', attendance: 88 },
+                { class: 'Mathematics', attendance: 91 }
               ]} />
             </CardContent>
           </Card>
@@ -409,24 +439,24 @@ export const ReportsPage: React.FC = () => {
             <CardContent className="space-y-4">
               <div className="p-3 bg-gradient-to-r from-green-50 dark:from-green-950/30 to-transparent rounded-lg">
                 <div className="flex justify-between mb-2">
-                  <span className="font-medium">CS101 - Data Structures</span>
-                  <span className="text-sm font-semibold text-green-600 dark:text-green-400">94.2%</span>
+                  <span className="font-medium">303191203 - Linear Algebra</span>
+                  <span className="text-sm font-semibold text-green-600 dark:text-green-400">91.0%</span>
                 </div>
-                <Progress value={94.2} />
+                <Progress value={91.0} />
               </div>
               <div className="p-3 bg-gradient-to-r from-primary/10 dark:from-primary/20 to-transparent rounded-lg">
                 <div className="flex justify-between mb-2">
-                  <span className="font-medium">MATH201 - Calculus II</span>
-                  <span className="text-sm font-semibold text-primary">89.8%</span>
+                  <span className="font-medium">303201301 - Data Structures</span>
+                  <span className="text-sm font-semibold text-primary">89.5%</span>
                 </div>
-                <Progress value={89.8} />
+                <Progress value={89.5} />
               </div>
               <div className="p-3 bg-gradient-to-r from-yellow-50 dark:from-yellow-950/30 to-transparent rounded-lg">
                 <div className="flex justify-between mb-2">
-                  <span className="font-medium">ENG101 - English Literature</span>
-                  <span className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">82.5%</span>
+                  <span className="font-medium">303105222 - Microprocessor Systems</span>
+                  <span className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">86.3%</span>
                 </div>
-                <Progress value={82.5} />
+                <Progress value={86.3} />
               </div>
             </CardContent>
           </Card>
@@ -447,7 +477,7 @@ export const ReportsPage: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-medium text-yellow-800 dark:text-yellow-300">Low Attendance Alert</p>
-                  <p className="text-sm text-yellow-600 dark:text-yellow-400">PHY101 dropped below 80% this week</p>
+                  <p className="text-sm text-yellow-600 dark:text-yellow-400">303105221 needs attention this week</p>
                 </div>
               </div>
               <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-800">
@@ -456,7 +486,7 @@ export const ReportsPage: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-medium text-red-800 dark:text-red-300">Critical Alert</p>
-                  <p className="text-sm text-red-600 dark:text-red-400">5 students missed 25%+ of classes</p>
+                  <p className="text-sm text-red-600 dark:text-red-400">{MOCK_STUDENTS.filter(s => (s.attendance || 0) < 70).length} students missed 30%+ of classes</p>
                 </div>
               </div>
             </CardContent>

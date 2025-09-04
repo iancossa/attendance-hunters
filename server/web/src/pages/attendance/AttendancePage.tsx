@@ -9,6 +9,7 @@ import { QrCode, UserCheck, Users, UserX, Clock, Search, Filter, Download, Edit,
 import { TakeAttendanceModal } from '../../components/modals/TakeAttendanceModal';
 import { exportToExcel } from '../../utils/exportUtils';
 import { useAppStore } from '../../store';
+import { ATTENDANCE_RECORDS } from '../../data/mockStudents';
 
 export const AttendancePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,14 +19,7 @@ export const AttendancePage: React.FC = () => {
 
   const { addNotification } = useAppStore();
   
-  const attendanceRecords = [
-    { id: 1, student: 'John Doe', class: 'CS101', date: '2024-01-15', status: 'present', time: '09:15 AM' },
-    { id: 2, student: 'Jane Smith', class: 'CS101', date: '2024-01-15', status: 'present', time: '09:12 AM' },
-    { id: 3, student: 'Mike Johnson', class: 'CS101', date: '2024-01-15', status: 'absent', time: '-' },
-    { id: 4, student: 'Sarah Wilson', class: 'MATH201', date: '2024-01-15', status: 'late', time: '09:25 AM' },
-    { id: 5, student: 'Alex Brown', class: 'CS101', date: '2024-01-15', status: 'present', time: '09:08 AM' },
-    { id: 6, student: 'Emma Davis', class: 'MATH201', date: '2024-01-15', status: 'present', time: '09:10 AM' },
-  ];
+  const attendanceRecords = ATTENDANCE_RECORDS;
 
   const filteredRecords = attendanceRecords.filter(record => 
     record.student.toLowerCase().includes(searchTerm.toLowerCase()) ||

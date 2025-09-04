@@ -9,6 +9,7 @@ import { GraduationCap, Users, UserPlus, Upload, Plus, Search, Edit, BarChart3, 
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../components/ui/dropdown-menu';
 import { exportToExcel } from '../../utils/exportUtils';
 import { useAppStore } from '../../store';
+import { COURSES } from '../../data/mockStudents';
 
 export const ClassesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,18 +25,22 @@ export const ClassesPage: React.FC = () => {
     }
   }, [openDropdown]);
   
-  const classes = [
-    { id: 1, name: 'Data Structures', code: 'CS101', faculty: 'Dr. Smith', students: 50, enrolled: 50, schedule: 'Mon, Wed 10:00 AM', room: 'A-101', status: 'active' },
-    { id: 2, name: 'Calculus II', code: 'MATH201', faculty: 'Prof. Johnson', students: 42, enrolled: 45, schedule: 'Tue, Thu 2:00 PM', room: 'B-205', status: 'active' },
-    { id: 3, name: 'English Literature', code: 'ENG101', faculty: 'Dr. Brown', students: 35, enrolled: 40, schedule: 'Mon, Fri 11:00 AM', room: 'C-301', status: 'active' },
-    { id: 4, name: 'Physics I', code: 'PHY101', faculty: 'Prof. Davis', students: 38, enrolled: 40, schedule: 'Wed, Fri 9:00 AM', room: 'D-102', status: 'active' },
-    { id: 5, name: 'Database Systems', code: 'CS201', faculty: 'Dr. Wilson', students: 28, enrolled: 35, schedule: 'Tue, Thu 10:00 AM', room: 'A-203', status: 'active' },
-  ];
+  const classes = COURSES.map((course, index) => ({
+    id: index + 1,
+    name: course.name.split(' – ')[1],
+    code: course.code,
+    faculty: course.faculty,
+    students: course.students,
+    enrolled: course.enrolled,
+    schedule: course.schedule,
+    room: course.room,
+    status: course.status
+  }));
 
   const filteredClasses = classes.filter(cls => 
     cls.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     cls.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cls.faculty.toLowerCase().includes(searchTerm.toLowerCase())
+    (cls.faculty || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -192,7 +197,7 @@ export const ClassesPage: React.FC = () => {
                           <div className="w-16 bg-muted rounded-full h-2">
                             <div 
                               className="bg-primary h-2 rounded-full" 
-                              style={{ width: `${(classItem.students / classItem.enrolled) * 100}%` }}
+                              style={{ width: `${(classItem.students / (classItem.enrolled || 1)) * 100}%` }}
                             ></div>
                           </div>
                         </div>

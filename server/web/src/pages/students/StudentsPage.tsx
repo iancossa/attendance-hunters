@@ -28,6 +28,7 @@ import {
   History
 } from 'lucide-react';
 import { exportToPDF, exportToExcel } from '../../utils/exportUtils';
+import { MOCK_STUDENTS } from '../../data/mockStudents';
 
 interface Student {
   id: string;
@@ -46,38 +47,7 @@ interface Student {
   gpa: number;
 }
 
-const mockStudents: Student[] = [
-  { id: '1', name: 'Alice Johnson', email: 'alice.johnson@university.edu', studentId: 'CS101-A-001', class: 'Data Structures', section: 'A', year: '2024', department: 'Computer Science', attendance: 92, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 123-4567', enrollmentDate: '2024-01-10', gpa: 3.8 },
-  { id: '2', name: 'Bob Smith', email: 'bob.smith@university.edu', studentId: 'MATH201-B-002', class: 'Calculus II', section: 'B', year: '2024', department: 'Mathematics', attendance: 88, status: 'Active', lastSeen: '2024-01-14', phone: '+1 (555) 234-5678', enrollmentDate: '2024-01-10', gpa: 3.6 },
-  { id: '3', name: 'Carol Davis', email: 'carol.davis@university.edu', studentId: 'PHY101-A-003', class: 'Physics I', section: 'A', year: '2023', department: 'Physics', attendance: 76, status: 'Active', lastSeen: '2024-01-13', phone: '+1 (555) 345-6789', enrollmentDate: '2023-01-10', gpa: 3.4 },
-  { id: '4', name: 'David Wilson', email: 'david.wilson@university.edu', studentId: 'ENG101-C-004', class: 'English Literature', section: 'C', year: '2024', department: 'English', attendance: 95, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 456-7890', enrollmentDate: '2024-01-10', gpa: 3.9 },
-  { id: '5', name: 'Eva Brown', email: 'eva.brown@university.edu', studentId: 'BIO201-A-005', class: 'Biology II', section: 'A', year: '2023', department: 'Biology', attendance: 68, status: 'Inactive', lastSeen: '2024-01-10', phone: '+1 (555) 567-8901', enrollmentDate: '2023-01-10', gpa: 3.2 },
-  { id: '6', name: 'Frank Miller', email: 'frank.miller@university.edu', studentId: 'CS101-B-006', class: 'Data Structures', section: 'B', year: '2024', department: 'Computer Science', attendance: 82, status: 'Active', lastSeen: '2024-01-14', phone: '+1 (555) 678-9012', enrollmentDate: '2024-01-10', gpa: 3.5 },
-  { id: '7', name: 'Grace Lee', email: 'grace.lee@university.edu', studentId: 'MATH201-A-007', class: 'Calculus II', section: 'A', year: '2024', department: 'Mathematics', attendance: 91, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 789-0123', enrollmentDate: '2024-01-10', gpa: 3.7 },
-  { id: '8', name: 'Henry Clark', email: 'henry.clark@university.edu', studentId: 'PHY101-B-008', class: 'Physics I', section: 'B', year: '2023', department: 'Physics', attendance: 59, status: 'Suspended', lastSeen: '2024-01-08', phone: '+1 (555) 890-1234', enrollmentDate: '2023-01-10', gpa: 2.8 },
-  { id: '9', name: 'Isabella Garcia', email: 'isabella.garcia@university.edu', studentId: 'CHEM101-A-009', class: 'General Chemistry', section: 'A', year: '2024', department: 'Chemistry', attendance: 87, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 901-2345', enrollmentDate: '2024-01-10', gpa: 3.6 },
-  { id: '10', name: 'Jack Thompson', email: 'jack.thompson@university.edu', studentId: 'HIST201-B-010', class: 'World History', section: 'B', year: '2023', department: 'History', attendance: 73, status: 'Active', lastSeen: '2024-01-12', phone: '+1 (555) 012-3456', enrollmentDate: '2023-01-10', gpa: 3.3 },
-  { id: '11', name: 'Kate Rodriguez', email: 'kate.rodriguez@university.edu', studentId: 'ART101-C-011', class: 'Fine Arts', section: 'C', year: '2024', department: 'Arts', attendance: 94, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 123-4567', enrollmentDate: '2024-01-10', gpa: 3.8 },
-  { id: '12', name: 'Liam Anderson', email: 'liam.anderson@university.edu', studentId: 'ECON201-A-012', class: 'Microeconomics', section: 'A', year: '2023', department: 'Economics', attendance: 81, status: 'Active', lastSeen: '2024-01-14', phone: '+1 (555) 234-5678', enrollmentDate: '2023-01-10', gpa: 3.5 },
-  { id: '13', name: 'Maya Patel', email: 'maya.patel@university.edu', studentId: 'PSYC101-B-013', class: 'Psychology', section: 'B', year: '2024', department: 'Psychology', attendance: 89, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 345-6789', enrollmentDate: '2024-01-10', gpa: 3.7 },
-  { id: '14', name: 'Noah Williams', email: 'noah.williams@university.edu', studentId: 'SOC201-C-014', class: 'Sociology', section: 'C', year: '2023', department: 'Sociology', attendance: 65, status: 'Inactive', lastSeen: '2024-01-09', phone: '+1 (555) 456-7890', enrollmentDate: '2023-01-10', gpa: 3.1 },
-  { id: '15', name: 'Olivia Martinez', email: 'olivia.martinez@university.edu', studentId: 'MUS101-A-015', class: 'Music Theory', section: 'A', year: '2024', department: 'Music', attendance: 96, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 567-8901', enrollmentDate: '2024-01-10', gpa: 3.9 },
-  { id: '16', name: 'Paul Jackson', email: 'paul.jackson@university.edu', studentId: 'PE101-B-016', class: 'Physical Education', section: 'B', year: '2024', department: 'Physical Education', attendance: 78, status: 'Active', lastSeen: '2024-01-13', phone: '+1 (555) 678-9012', enrollmentDate: '2024-01-10', gpa: 3.4 },
-  { id: '17', name: 'Quinn Taylor', email: 'quinn.taylor@university.edu', studentId: 'PHIL201-A-017', class: 'Philosophy', section: 'A', year: '2023', department: 'Philosophy', attendance: 85, status: 'Active', lastSeen: '2024-01-14', phone: '+1 (555) 789-0123', enrollmentDate: '2023-01-10', gpa: 3.6 },
-  { id: '18', name: 'Rachel White', email: 'rachel.white@university.edu', studentId: 'GEOL101-C-018', class: 'Geology', section: 'C', year: '2024', department: 'Geology', attendance: 72, status: 'Active', lastSeen: '2024-01-12', phone: '+1 (555) 890-1234', enrollmentDate: '2024-01-10', gpa: 3.3 },
-  { id: '19', name: 'Samuel Harris', email: 'samuel.harris@university.edu', studentId: 'STAT201-B-019', class: 'Statistics', section: 'B', year: '2023', department: 'Statistics', attendance: 90, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 901-2345', enrollmentDate: '2023-01-10', gpa: 3.7 },
-  { id: '20', name: 'Tina Lewis', email: 'tina.lewis@university.edu', studentId: 'ANTH101-A-020', class: 'Anthropology', section: 'A', year: '2024', department: 'Anthropology', attendance: 83, status: 'Active', lastSeen: '2024-01-14', phone: '+1 (555) 012-3456', enrollmentDate: '2024-01-10', gpa: 3.5 },
-  { id: '21', name: 'Uma Singh', email: 'uma.singh@university.edu', studentId: 'LING201-B-021', class: 'Linguistics', section: 'B', year: '2023', department: 'Linguistics', attendance: 77, status: 'Active', lastSeen: '2024-01-13', phone: '+1 (555) 123-4567', enrollmentDate: '2023-01-10', gpa: 3.4 },
-  { id: '22', name: 'Victor Chen', email: 'victor.chen@university.edu', studentId: 'ARCH101-C-022', class: 'Architecture', section: 'C', year: '2024', department: 'Architecture', attendance: 88, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 234-5678', enrollmentDate: '2024-01-10', gpa: 3.6 },
-  { id: '23', name: 'Wendy Kim', email: 'wendy.kim@university.edu', studentId: 'JOUR201-A-023', class: 'Journalism', section: 'A', year: '2023', department: 'Journalism', attendance: 92, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 345-6789', enrollmentDate: '2023-01-10', gpa: 3.8 },
-  { id: '24', name: 'Xavier Lopez', email: 'xavier.lopez@university.edu', studentId: 'THEA101-B-024', class: 'Theater Arts', section: 'B', year: '2024', department: 'Theater', attendance: 86, status: 'Active', lastSeen: '2024-01-14', phone: '+1 (555) 456-7890', enrollmentDate: '2024-01-10', gpa: 3.6 },
-  { id: '25', name: 'Yuki Tanaka', email: 'yuki.tanaka@university.edu', studentId: 'LANG101-C-025', class: 'Foreign Languages', section: 'C', year: '2024', department: 'Languages', attendance: 94, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 567-8901', enrollmentDate: '2024-01-10', gpa: 3.9 },
-  { id: '26', name: 'Zoe Mitchell', email: 'zoe.mitchell@university.edu', studentId: 'NURS201-A-026', class: 'Nursing', section: 'A', year: '2023', department: 'Nursing', attendance: 97, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 678-9012', enrollmentDate: '2023-01-10', gpa: 4.0 },
-  { id: '27', name: 'Aaron Cooper', email: 'aaron.cooper@university.edu', studentId: 'AGRI101-B-027', class: 'Agriculture', section: 'B', year: '2024', department: 'Agriculture', attendance: 75, status: 'Active', lastSeen: '2024-01-13', phone: '+1 (555) 789-0123', enrollmentDate: '2024-01-10', gpa: 3.3 },
-  { id: '28', name: 'Bella Reed', email: 'bella.reed@university.edu', studentId: 'DENT201-C-028', class: 'Dentistry', section: 'C', year: '2023', department: 'Dentistry', attendance: 91, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 890-1234', enrollmentDate: '2023-01-10', gpa: 3.8 },
-  { id: '29', name: 'Carlos Rivera', email: 'carlos.rivera@university.edu', studentId: 'VET101-A-029', class: 'Veterinary Science', section: 'A', year: '2024', department: 'Veterinary', attendance: 84, status: 'Active', lastSeen: '2024-01-14', phone: '+1 (555) 901-2345', enrollmentDate: '2024-01-10', gpa: 3.5 },
-  { id: '30', name: 'Diana Foster', email: 'diana.foster@university.edu', studentId: 'LAW201-B-030', class: 'Legal Studies', section: 'B', year: '2023', department: 'Law', attendance: 89, status: 'Active', lastSeen: '2024-01-15', phone: '+1 (555) 012-3456', enrollmentDate: '2023-01-10', gpa: 3.7 }
-];
+const mockStudents = MOCK_STUDENTS;
 
 export const StudentsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -96,20 +66,20 @@ export const StudentsPage: React.FC = () => {
     return mockStudents.filter(student => {
       const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           student.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           student.class.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           student.department.toLowerCase().includes(searchTerm.toLowerCase());
+                           (student.studentId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (student.class || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (student.department || '').toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesYear = selectedYear === 'All' || student.year === selectedYear;
+      const matchesYear = selectedYear === 'All' || student.year.toString() === selectedYear;
       const matchesStatus = selectedStatus === 'All' || student.status === selectedStatus;
       const matchesDepartment = selectedDepartment === 'All' || student.department === selectedDepartment;
       const matchesSection = selectedSection === 'All' || student.section === selectedSection;
       
       const matchesAttendance = 
         attendanceFilter === 'All' ||
-        (attendanceFilter === 'High' && student.attendance >= 85) ||
-        (attendanceFilter === 'Medium' && student.attendance >= 70 && student.attendance < 85) ||
-        (attendanceFilter === 'Low' && student.attendance < 70);
+        (attendanceFilter === 'High' && (student.attendance || 0) >= 85) ||
+        (attendanceFilter === 'Medium' && (student.attendance || 0) >= 70 && (student.attendance || 0) < 85) ||
+        (attendanceFilter === 'Low' && (student.attendance || 0) < 70);
       
       return matchesSearch && matchesYear && matchesStatus && matchesDepartment && matchesSection && matchesAttendance;
     });
@@ -182,7 +152,7 @@ export const StudentsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Students</p>
-                  <div className="text-2xl font-bold text-primary mt-1">{mockStudents.length}</div>
+                  <div className="text-2xl font-bold text-primary mt-1">{MOCK_STUDENTS.length}</div>
                   <p className="text-xs text-muted-foreground mt-1">enrolled students</p>
                 </div>
                 <div className="p-2 bg-primary/10 rounded-full">
@@ -197,7 +167,7 @@ export const StudentsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Active Students</p>
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{mockStudents.filter(s => s.status === 'Active').length}</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{MOCK_STUDENTS.filter(s => s.status === 'Active').length}</div>
                   <p className="text-xs text-muted-foreground mt-1">currently enrolled</p>
                 </div>
                 <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-full">
@@ -212,7 +182,7 @@ export const StudentsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Average Attendance</p>
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{Math.round(mockStudents.reduce((acc, s) => acc + s.attendance, 0) / mockStudents.length)}%</div>
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{Math.round(MOCK_STUDENTS.reduce((acc, s) => acc + (s.attendance || 0), 0) / MOCK_STUDENTS.length)}%</div>
                   <p className="text-xs text-muted-foreground mt-1">this semester</p>
                 </div>
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
@@ -227,7 +197,7 @@ export const StudentsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">At Risk</p>
-                  <div className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">{mockStudents.filter(s => s.attendance < 70).length}</div>
+                  <div className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">{MOCK_STUDENTS.filter(s => (s.attendance || 0) < 70).length}</div>
                   <p className="text-xs text-muted-foreground mt-1">below 70% attendance</p>
                 </div>
                 <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-full">
@@ -375,19 +345,19 @@ export const StudentsPage: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <span className={`font-medium ${getAttendanceColor(student.attendance)}`}>
-                            {student.attendance}%
+                          <span className={`font-medium ${getAttendanceColor(student.attendance || 0)}`}>
+                            {student.attendance || 0}%
                           </span>
                           <div className="w-16 bg-muted rounded-full h-2">
                             <div 
-                              className={`h-2 rounded-full ${getAttendanceBg(student.attendance)}`}
-                              style={{ width: `${student.attendance}%` }}
+                              className={`h-2 rounded-full ${getAttendanceBg(student.attendance || 0)}`}
+                              style={{ width: `${student.attendance || 0}%` }}
                             ></div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getStatusColor(student.status)}>
+                        <Badge className={getStatusColor(student.status || 'Active')}>
                           {student.status}
                         </Badge>
                       </TableCell>
