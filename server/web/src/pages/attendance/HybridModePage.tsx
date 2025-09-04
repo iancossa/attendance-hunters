@@ -16,8 +16,15 @@ export const HybridModePage: React.FC = () => {
   const [sessionActive, setSessionActive] = useState(false);
   const [activeTab, setActiveTab] = useState('qr');
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [sessionData, setSessionData] = useState<any>(null);
 
   useEffect(() => {
+    // Load session data from localStorage
+    const storedSession = localStorage.getItem('attendanceSession');
+    if (storedSession) {
+      const parsed = JSON.parse(storedSession);
+      setSessionData(parsed);
+    }
     generateQRCode();
   }, []);
 
@@ -32,12 +39,21 @@ export const HybridModePage: React.FC = () => {
   }, [sessionActive, timeLeft]);
 
   const generateQRCode = () => {
-    const sessionData = {
+    const storedSession = localStorage.getItem('attendanceSession');
+    const sessionInfo = storedSession ? JSON.parse(storedSession) : {};
+    
+    const qrData = {
       sessionId: Math.random().toString(36).substring(7),
-      courseId: 'CS101',
-      timestamp: Date.now()
+      courseId: sessionInfo.courseId || 'CS101',
+      courseName: sessionInfo.courseName || 'Unknown Course',
+      section: sessionInfo.section || 'A',
+      sessionType: sessionInfo.sessionType || 'Lecture',
+      date: new Date().toLocaleDateString(),
+      time: new Date().toLocaleTimeString(),
+      timestamp: Date.now(),
+      expires: Date.now() + (180 * 1000)
     };
-    setQrValue(JSON.stringify(sessionData));
+    setQrValue(JSON.stringify(qrData));
     setSessionActive(true);
     setTimeLeft(180);
   };
@@ -67,6 +83,18 @@ export const HybridModePage: React.FC = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-1">Hybrid Attendance Mode</h1>
           <p className="text-muted-foreground text-sm">Start with QR scanning, then manual adjustments</p>
+          {sessionData && (
+            <Card className="mt-3 bg-primary/5 border-primary/20">
+              <CardContent className="p-3">
+                <div className="text-sm">
+                  <strong>{sessionData.courseName}</strong> • Section {sessionData.section} • {sessionData.sessionType}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {new Date().toLocaleDateString()} • {new Date().toLocaleTimeString()}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Progress Overview */}

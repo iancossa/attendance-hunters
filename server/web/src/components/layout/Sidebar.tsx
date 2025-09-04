@@ -18,7 +18,7 @@ export const Sidebar: React.FC = () => {
 
   const analyticsItems = [
     { name: 'Reports', path: ROUTES.REPORTS, icon: FileText, badge: null },
-    { name: 'Leaderboard', path: ROUTES.LEADERBOARD, icon: Trophy, badge: 'New' },
+    { name: 'Leaderboard', path: ROUTES.LEADERBOARD, icon: Trophy, badge: null },
   ];
 
   const systemItems = [
@@ -89,7 +89,7 @@ export const Sidebar: React.FC = () => {
         <div className="p-4 border-t border-border/50">
           <div className="text-center">
             <p className="text-xs text-muted-foreground">Academic Year</p>
-            <p className="text-sm font-medium text-foreground">2024-25</p>
+            {/* Dynamic year */}
           </div>
         </div>
       </div>

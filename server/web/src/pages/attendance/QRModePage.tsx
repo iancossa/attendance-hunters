@@ -11,11 +11,18 @@ export const QRModePage: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(300);
   const [sessionActive, setSessionActive] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [sessionData, setSessionData] = useState<any>(null);
   
   const presentCount = 24;
   const totalStudents = 50;
 
   useEffect(() => {
+    // Load session data from localStorage
+    const storedSession = localStorage.getItem('attendanceSession');
+    if (storedSession) {
+      const parsed = JSON.parse(storedSession);
+      setSessionData(parsed);
+    }
     generateQRCode();
   }, []);
 
@@ -30,12 +37,21 @@ export const QRModePage: React.FC = () => {
   }, [sessionActive, timeLeft]);
 
   const generateQRCode = () => {
-    const sessionData = {
+    const storedSession = localStorage.getItem('attendanceSession');
+    const sessionInfo = storedSession ? JSON.parse(storedSession) : {};
+    
+    const qrData = {
       sessionId: Math.random().toString(36).substring(7),
-      courseId: 'CS101',
-      timestamp: Date.now()
+      courseId: sessionInfo.courseId || 'CS101',
+      courseName: sessionInfo.courseName || 'Unknown Course',
+      section: sessionInfo.section || 'A',
+      sessionType: sessionInfo.sessionType || 'Lecture',
+      date: new Date().toLocaleDateString(),
+      time: new Date().toLocaleTimeString(),
+      timestamp: Date.now(),
+      expires: Date.now() + (300 * 1000)
     };
-    setQrValue(JSON.stringify(sessionData));
+    setQrValue(JSON.stringify(qrData));
     setSessionActive(true);
     setTimeLeft(300);
   };
@@ -52,6 +68,18 @@ export const QRModePage: React.FC = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-1">QR Code Attendance Mode</h1>
           <p className="text-muted-foreground text-sm">Students scan QR code with mobile app</p>
+          {sessionData && (
+            <Card className="mt-3 bg-primary/5 border-primary/20">
+              <CardContent className="p-3">
+                <div className="text-sm">
+                  <strong>{sessionData.courseName}</strong> • Section {sessionData.section} • {sessionData.sessionType}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {new Date().toLocaleDateString()} • {new Date().toLocaleTimeString()}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -112,22 +140,11 @@ export const QRModePage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2 max-h-64 overflow-y-auto">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <div key={i} className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950/30 rounded border">
-                    <div>
-                      <div className="font-medium text-sm">Student {i + 1}</div>
-                      <div className="text-xs text-muted-foreground">Roll: {i + 1}</div>
-                    </div>
-                    <Badge className="bg-green-100 text-green-700 text-xs">
-                      Just now
-                    </Badge>
-                  </div>
-                ))}
-                {Array.from({ length: 5 }, (_, i) => i).length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <p className="text-sm">Waiting for QR scans...</p>
-                  </div>
-                )}
+                <div className="text-center py-8 text-muted-foreground">
+                  <QrCode className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm">Waiting for QR scans...</p>
+                  <p className="text-xs mt-1">Students will appear here as they scan</p>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -146,22 +163,22 @@ export const QRModePage: React.FC = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="text-center p-6 bg-blue-50 dark:bg-blue-950/20 rounded-lg h-32 flex flex-col justify-center">
-                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full w-8 h-8 mx-auto mb-2 flex items-center justify-center">
-                  <Smartphone className="h-4 w-4 text-blue-600" />
+                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                  <Smartphone className="h-6 w-6 text-blue-600" />
                 </div>
                 <h3 className="font-medium mb-1 text-sm">Step 1: Open App</h3>
                 <p className="text-xs text-muted-foreground">Launch mobile app</p>
               </div>
               <div className="text-center p-6 bg-green-50 dark:bg-green-950/20 rounded-lg h-32 flex flex-col justify-center">
-                <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-full w-8 h-8 mx-auto mb-2 flex items-center justify-center">
-                  <QrCode className="h-4 w-4 text-green-600" />
+                <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                  <QrCode className="h-6 w-6 text-green-600" />
                 </div>
                 <h3 className="font-medium mb-1 text-sm">Step 2: Scan QR</h3>
                 <p className="text-xs text-muted-foreground">Point camera at QR code</p>
               </div>
               <div className="text-center p-6 bg-purple-50 dark:bg-purple-950/20 rounded-lg h-32 flex flex-col justify-center">
-                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-full w-8 h-8 mx-auto mb-2 flex items-center justify-center">
-                  <CheckCircle className="h-4 w-4 text-purple-600" />
+                <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                  <CheckCircle className="h-6 w-6 text-purple-600" />
                 </div>
                 <h3 className="font-medium mb-1 text-sm">Step 3: Confirm</h3>
                 <p className="text-xs text-muted-foreground">Attendance marked</p>

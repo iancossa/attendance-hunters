@@ -15,7 +15,7 @@ export const AttendancePage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState<'scanner' | 'attendance'>('attendance');
+
   const { addNotification } = useAppStore();
   
   const attendanceRecords = [
@@ -44,20 +44,14 @@ export const AttendancePage: React.FC = () => {
             <Button 
               variant="outline" 
               className="border-primary/20 text-primary hover:bg-primary/10"
-              onClick={() => {
-                setModalMode('scanner');
-                setShowModal(true);
-              }}
+              onClick={() => setShowModal(true)}
             >
               <QrCode className="h-4 w-4 mr-2" />
               QR Scanner
             </Button>
             <Button 
               className="bg-primary hover:bg-primary/90"
-              onClick={() => {
-                setModalMode('attendance');
-                setShowModal(true);
-              }}
+              onClick={() => setShowModal(true)}
             >
               <UserCheck className="h-4 w-4 mr-2" />
               Mark Attendance
@@ -275,7 +269,6 @@ export const AttendancePage: React.FC = () => {
       <TakeAttendanceModal 
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        initialMode={modalMode}
       />
     </Layout>
   );
