@@ -27,6 +27,7 @@ import {
   MessageSquare,
   History
 } from 'lucide-react';
+import { exportToPDF, exportToExcel } from '../../utils/exportUtils';
 
 interface Student {
   id: string;
@@ -158,7 +159,11 @@ export const StudentsPage: React.FC = () => {
             <p className="text-muted-foreground mt-1">Manage student records and track academic progress</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2">
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={() => exportToExcel(filteredStudents, 'students-data')}
+            >
               <Download className="h-4 w-4" />
               Export
             </Button>

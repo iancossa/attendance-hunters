@@ -8,6 +8,9 @@ import { Input } from '../../components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../../components/ui/dropdown-menu';
 import { FileText, Download, TrendingUp, Users, AlertTriangle, Calendar, Search, BarChart3, MoreVertical } from 'lucide-react';
+import { AttendanceChart, ClassPerformanceChart } from '../../components/charts';
+import { exportToExcel, exportToPDF } from '../../utils/exportUtils';
+import { useAppStore } from '../../store';
 
 interface ReportData {
   id: string;
@@ -67,6 +70,7 @@ export const ReportsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('All');
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const { addNotification } = useAppStore();
 
   const filteredReports = mockReports.filter(report => {
     const matchesSearch = report.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -116,7 +120,13 @@ export const ReportsPage: React.FC = () => {
               <FileText className="h-4 w-4" />
               Generate Report
             </Button>
-            <Button className="gap-2">
+            <Button 
+              className="gap-2"
+              onClick={() => {
+                exportToExcel(filteredReports, 'reports-data');
+                addNotification({ message: 'Reports exported successfully', type: 'success' });
+              }}
+            >
               <Download className="h-4 w-4" />
               Export Data
             </Button>
@@ -342,6 +352,48 @@ export const ReportsPage: React.FC = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Analytics Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                </div>
+                Monthly Trends
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AttendanceChart data={[
+                { day: 'Jan', attendance: 87 },
+                { day: 'Feb', attendance: 89 },
+                { day: 'Mar', attendance: 85 },
+                { day: 'Apr', attendance: 91 },
+                { day: 'May', attendance: 88 }
+              ]} />
+            </CardContent>
+          </Card>
+          
+          <Card className="shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <BarChart3 className="h-4 w-4 text-primary" />
+                </div>
+                Department Performance
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ClassPerformanceChart data={[
+                { class: 'CS', attendance: 92 },
+                { class: 'Math', attendance: 88 },
+                { class: 'Physics', attendance: 84 },
+                { class: 'English', attendance: 79 }
+              ]} />
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Quick Analytics */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

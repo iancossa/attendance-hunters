@@ -25,8 +25,10 @@ import {
   BookOpen,
   Save
 } from 'lucide-react';
+import { useAppStore } from '../../store';
 export const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('General');
+  const { addNotification } = useAppStore();
 
   const tabs = [
     { id: 'General', label: 'General', icon: <Settings className="h-4 w-4" /> },
@@ -107,7 +109,10 @@ export const SettingsPage: React.FC = () => {
                       <Input defaultValue="UTC-5 (Eastern Time)" className="bg-background" />
                     </div>
                   </div>
-                  <Button className="gap-2">
+                  <Button 
+                    className="gap-2"
+                    onClick={() => addNotification({ message: 'Settings saved successfully', type: 'success' })}
+                  >
                     <Save className="h-4 w-4" />
                     Save Changes
                   </Button>
@@ -153,7 +158,10 @@ export const SettingsPage: React.FC = () => {
                       <Input type="number" defaultValue="2" className="bg-background" />
                     </div>
                   </div>
-                  <Button className="gap-2">
+                  <Button 
+                    className="gap-2"
+                    onClick={() => addNotification({ message: 'Attendance rules updated', type: 'success' })}
+                  >
                     <Save className="h-4 w-4" />
                     Update Rules
                   </Button>

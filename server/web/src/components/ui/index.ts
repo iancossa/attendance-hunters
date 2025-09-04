@@ -10,3 +10,5 @@ export { Alert, AlertTitle, AlertDescription } from './alert';
 export { Progress } from './progress';
 export { Skeleton } from './skeleton';
 export { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './dropdown-menu';
+export { NotificationContainer } from './notification';
+export { QRScanner } from './qr-scanner';

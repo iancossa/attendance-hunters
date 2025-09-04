@@ -7,6 +7,8 @@ import { Badge } from '../../components/ui/badge';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '../../components/ui/table';
 import { QrCode, UserCheck, Users, UserX, Clock, Search, Filter, Download, Edit, MoreVertical, Eye, History, MessageSquare } from 'lucide-react';
 import { TakeAttendanceModal } from '../../components/modals/TakeAttendanceModal';
+import { exportToExcel } from '../../utils/exportUtils';
+import { useAppStore } from '../../store';
 
 export const AttendancePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,6 +16,7 @@ export const AttendancePage: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<'scanner' | 'attendance'>('attendance');
+  const { addNotification } = useAppStore();
   
   const attendanceRecords = [
     { id: 1, student: 'John Doe', class: 'CS101', date: '2024-01-15', status: 'present', time: '09:15 AM' },
@@ -137,7 +140,14 @@ export const AttendancePage: React.FC = () => {
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
               />
-              <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/10">
+              <Button 
+                variant="outline" 
+                className="border-primary/20 text-primary hover:bg-primary/10"
+                onClick={() => {
+                  exportToExcel(filteredRecords, 'attendance-records');
+                  addNotification({ message: 'Attendance records exported successfully', type: 'success' });
+                }}
+              >
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>

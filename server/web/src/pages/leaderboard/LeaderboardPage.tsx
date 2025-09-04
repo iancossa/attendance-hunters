@@ -21,6 +21,8 @@ import {
   Calendar,
   Users
 } from 'lucide-react';
+import { exportToExcel } from '../../utils/exportUtils';
+import { useAppStore } from '../../store';
 
 interface Student {
   id: string;
@@ -49,6 +51,7 @@ export const LeaderboardPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClass, setSelectedClass] = useState('All');
   const [selectedPeriod, setSelectedPeriod] = useState('Current Semester');
+  const { addNotification } = useAppStore();
 
   const topStudents: Student[] = [
     { id: '1', rank: 1, name: 'Alice Johnson', studentId: 'STU001', class: 'CS101', attendance: 98.5, streak: 45, badges: 12, points: 2450, lastActive: '2024-01-15' },
@@ -111,7 +114,14 @@ export const LeaderboardPage: React.FC = () => {
             <p className="text-muted-foreground mt-1">Top performing students and achievements</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2">
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={() => {
+                exportToExcel(filteredStudents, 'leaderboard-rankings');
+                addNotification({ message: 'Leaderboard exported successfully', type: 'success' });
+              }}
+            >
               <Filter className="h-4 w-4" />
               Export Rankings
             </Button>

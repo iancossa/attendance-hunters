@@ -4,18 +4,12 @@ import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { 
-  Target, 
   Search, 
   Bell, 
-  Settings, 
-  LogOut, 
-  UserCircle, 
-  HelpCircle,
   Plus,
   Calendar,
   Users,
   BookOpen,
-  Palette,
   Sun,
   Moon,
   Monitor,
@@ -25,6 +19,8 @@ import {
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { useTheme } from '../../hooks/useTheme';
+import { useAuth } from '../../hooks/useAuth';
+import { useAppStore } from '../../store';
 
 export const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,7 +30,9 @@ export const Header: React.FC = () => {
   const [quickActionDropdownOpen, setQuickActionDropdownOpen] = useState(false);
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { logout } = useAuth();
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const { notifications, addNotification } = useAppStore();
 
   const closeAllDropdowns = () => {
     setUserDropdownOpen(false);
@@ -44,7 +42,7 @@ export const Header: React.FC = () => {
     setMobileSearchOpen(false);
   };
 
-  const notifications: any[] = [];
+  const notificationsList = notifications || [];
 
   const themeOptions = [
     { id: 'light', name: 'Light', icon: <Sun className="h-4 w-4" /> },
@@ -58,9 +56,7 @@ export const Header: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo and Brand */}
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Target className="h-5 w-5 text-primary" />
-            </div>
+
             <div>
               <h1 className="text-lg font-semibold text-foreground">
                 Attendance Hunters
@@ -99,6 +95,7 @@ export const Header: React.FC = () => {
             {/* Quick Actions */}
             <DropdownMenu open={quickActionDropdownOpen} onOpenChange={setQuickActionDropdownOpen}>
               <DropdownMenuTrigger 
+                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-muted/80 h-9 px-3"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (quickActionDropdownOpen) {
@@ -109,15 +106,13 @@ export const Header: React.FC = () => {
                   }
                 }}
               >
-                <Button variant="ghost" size="sm" className="gap-2 hover:bg-muted/80 transition-colors">
-                  <Plus className="h-4 w-4" />
-                  <span className="hidden sm:inline">Quick Add</span>
-                </Button>
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">Quick Add</span>
               </DropdownMenuTrigger>
               {quickActionDropdownOpen && (
                 <>
-                  <div className="fixed inset-0 bg-black/20 dark:bg-black/40 z-40" onClick={closeAllDropdowns} />
-                  <DropdownMenuContent className="w-48 z-50">
+                  <div className="fixed inset-0 z-40" onClick={closeAllDropdowns} />
+                  <DropdownMenuContent className="w-48 z-50 bg-background dark:bg-background border-border dark:border-border shadow-lg">
                     <DropdownMenuItem 
                       onClick={() => {
                         closeAllDropdowns();
@@ -156,6 +151,7 @@ export const Header: React.FC = () => {
             {/* Notifications */}
             <DropdownMenu open={notificationDropdownOpen} onOpenChange={setNotificationDropdownOpen}>
               <DropdownMenuTrigger 
+                className="relative inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-muted/80 h-9 w-9"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (notificationDropdownOpen) {
@@ -166,19 +162,17 @@ export const Header: React.FC = () => {
                   }
                 }}
               >
-                <Button variant="ghost" size="sm" className="relative hover:bg-muted/80 transition-colors">
-                  <Bell className={`h-4 w-4 ${notificationCount > 0 ? 'animate-pulse' : ''}`} />
-                  {notificationCount > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-red-500 hover:bg-red-500 animate-pulse">
-                      {notificationCount}
-                    </Badge>
-                  )}
-                </Button>
+                <Bell className={`h-4 w-4 ${notificationCount > 0 ? 'animate-pulse' : ''}`} />
+                {notificationCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-red-500 hover:bg-red-500 animate-pulse">
+                    {notificationCount}
+                  </Badge>
+                )}
               </DropdownMenuTrigger>
               {notificationDropdownOpen && (
                 <>
-                  <div className="fixed inset-0 bg-black/20 dark:bg-black/40 z-40" onClick={closeAllDropdowns} />
-                  <DropdownMenuContent className="w-80 z-50">
+                  <div className="fixed inset-0 z-40" onClick={closeAllDropdowns} />
+                  <DropdownMenuContent className="w-80 z-50 bg-background dark:bg-background border-border dark:border-border shadow-lg">
                     <div className="p-3 border-b bg-muted/30">
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">Notifications</h4>
@@ -186,17 +180,17 @@ export const Header: React.FC = () => {
                           Mark all read
                         </Button>
                       </div>
-                      <p className="text-sm text-muted-foreground">0 unread</p>
+                      <p className="text-sm text-muted-foreground">{notificationsList.length} unread</p>
                     </div>
                     <div className="max-h-64 overflow-y-auto">
-                      {notifications.length === 0 ? (
+                      {notificationsList.length === 0 ? (
                         <div className="p-8 text-center">
                           <Bell className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
                           <p className="text-sm text-muted-foreground mb-1">No notifications</p>
                           <p className="text-xs text-muted-foreground">You're all caught up!</p>
                         </div>
                       ) : (
-                        notifications.map((notification) => (
+                        notificationsList.map((notification) => (
                           <DropdownMenuItem 
                             key={notification.id} 
                             className="p-3 cursor-pointer hover:bg-muted/50 transition-colors border-l-2 border-l-transparent hover:border-l-primary" 
@@ -204,9 +198,9 @@ export const Header: React.FC = () => {
                           >
                             <div className="flex items-start gap-3 flex-1">
                               <div className="flex-1">
-                                <p className="font-medium text-sm">{notification.title}</p>
+                                <p className="font-medium text-sm">{notification.type.toUpperCase()}</p>
                                 <p className="text-xs text-muted-foreground mb-1">{notification.message}</p>
-                                <p className="text-xs text-muted-foreground">{notification.time}</p>
+                                <p className="text-xs text-muted-foreground">Just now</p>
                               </div>
                             </div>
                           </DropdownMenuItem>
@@ -230,6 +224,7 @@ export const Header: React.FC = () => {
             {/* User Menu */}
             <DropdownMenu open={userDropdownOpen} onOpenChange={setUserDropdownOpen}>
               <DropdownMenuTrigger 
+                className="relative inline-flex items-center justify-center rounded-full text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-muted/80 h-9 w-9"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (userDropdownOpen) {
@@ -240,18 +235,16 @@ export const Header: React.FC = () => {
                   }
                 }}
               >
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-muted/80 transition-colors">
-                  <Avatar className="h-8 w-8 ring-2 ring-transparent hover:ring-primary/20 transition-all">
-                    <AvatarFallback className="bg-primary/10 text-primary">
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
+                <Avatar className="h-8 w-8 ring-2 ring-transparent hover:ring-primary/20 transition-all">
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
               </DropdownMenuTrigger>
               {userDropdownOpen && (
                 <>
-                  <div className="fixed inset-0 bg-black/20 dark:bg-black/40 z-40" onClick={closeAllDropdowns} />
-                  <DropdownMenuContent className="w-64 z-50">
+                  <div className="fixed inset-0 z-40" onClick={closeAllDropdowns} />
+                  <DropdownMenuContent className="w-64 z-50 bg-background dark:bg-background border-border dark:border-border shadow-lg">
                     <div className="p-3 border-b bg-gradient-to-r from-primary/5 to-transparent">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
@@ -288,7 +281,7 @@ export const Header: React.FC = () => {
                         <ChevronRight className={`h-3 w-3 transition-transform ${themeDropdownOpen ? 'rotate-90' : ''}`} />
                       </DropdownMenuItem>
                       {themeDropdownOpen && (
-                        <div className="absolute right-full top-0 mr-1 w-40 bg-card border rounded-lg shadow-xl z-50 py-1 animate-in slide-in-from-right-2">
+                        <div className="absolute right-full top-0 mr-1 w-40 bg-background dark:bg-background border border-border dark:border-border rounded-lg shadow-xl z-50 py-1 animate-in slide-in-from-right-2">
                           {themeOptions.map((themeOption) => (
                             <div
                               key={themeOption.id}
@@ -329,7 +322,11 @@ export const Header: React.FC = () => {
                     <div className="border-t mx-1" />
                     <DropdownMenuItem 
                       className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" 
-                      onClick={() => closeAllDropdowns()}
+                      onClick={() => {
+                        closeAllDropdowns();
+                        addNotification({ message: 'Logged out successfully', type: 'info' });
+                        logout();
+                      }}
                     >
                       Sign Out
                     </DropdownMenuItem>

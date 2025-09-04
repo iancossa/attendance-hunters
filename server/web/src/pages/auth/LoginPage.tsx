@@ -4,6 +4,7 @@ import { Input } from '../../components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../../components/ui/card';
 import { Alert, AlertDescription } from '../../components/ui/alert';
 import { Target, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { useAppStore } from '../../store';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const { addNotification } = useAppStore();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,9 +23,11 @@ export const LoginPage: React.FC = () => {
     if (email === 'admin@attendance.com' && password === 'admin123') {
       localStorage.setItem('auth_token', 'admin_token');
       localStorage.setItem('user_role', 'admin');
+      addNotification({ message: 'Login successful! Welcome back.', type: 'success' });
       window.location.reload();
     } else {
       setError('Invalid email or password');
+      addNotification({ message: 'Invalid credentials. Please try again.', type: 'error' });
     }
     
     setIsLoading(false);

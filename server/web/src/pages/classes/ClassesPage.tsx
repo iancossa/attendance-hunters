@@ -7,10 +7,13 @@ import { Input } from '../../components/ui/input';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '../../components/ui/table';
 import { GraduationCap, Users, UserPlus, Upload, Plus, Search, Edit, BarChart3, Calendar, Clock, MoreVertical } from 'lucide-react';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../components/ui/dropdown-menu';
+import { exportToExcel } from '../../utils/exportUtils';
+import { useAppStore } from '../../store';
 
 export const ClassesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const { addNotification } = useAppStore();
 
   // Close dropdown when clicking outside
   React.useEffect(() => {
@@ -44,9 +47,16 @@ export const ClassesPage: React.FC = () => {
             <p className="text-muted-foreground">Manage classes, faculty assignments, and student enrollment</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/10">
+            <Button 
+              variant="outline" 
+              className="border-primary/20 text-primary hover:bg-primary/10"
+              onClick={() => {
+                exportToExcel(filteredClasses, 'classes-data');
+                addNotification({ message: 'Classes data exported successfully', type: 'success' });
+              }}
+            >
               <Upload className="h-4 w-4 mr-2" />
-              Import Students
+              Export Classes
             </Button>
             <Button className="bg-primary hover:bg-primary/90">
               <Plus className="h-4 w-4 mr-2" />

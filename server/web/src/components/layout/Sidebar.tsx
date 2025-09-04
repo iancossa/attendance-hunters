@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { ROUTES } from '../../constants';
-import { BarChart3, GraduationCap, FileText, Trophy, Settings, Users, Target } from 'lucide-react';
+import { BarChart3, GraduationCap, FileText, Trophy, Settings, Users, Target, UserCheck } from 'lucide-react';
 import { Badge } from '../ui/badge';
+import { useAppStore } from '../../store';
 
 export const Sidebar: React.FC = () => {
   const [activeItem, setActiveItem] = useState(window.location.pathname);
+  const { addNotification } = useAppStore();
 
   const mainMenuItems = [
     { name: 'Dashboard', path: ROUTES.DASHBOARD, icon: BarChart3, badge: null },
     { name: 'Attendance', path: ROUTES.ATTENDANCE, icon: Target, badge: null },
     { name: 'Classes', path: ROUTES.CLASSES, icon: GraduationCap, badge: null },
     { name: 'Students', path: '/students', icon: Users, badge: null },
+    { name: 'Faculty', path: '/faculty', icon: UserCheck, badge: null },
   ];
 
   const analyticsItems = [
@@ -24,6 +27,7 @@ export const Sidebar: React.FC = () => {
 
   const handleItemClick = (path: string) => {
     setActiveItem(path);
+    addNotification({ message: `Navigated to ${path.replace('/', '').replace('-', ' ')}`, type: 'info' });
   };
 
   const renderMenuGroup = (title: string, items: any[]) => (

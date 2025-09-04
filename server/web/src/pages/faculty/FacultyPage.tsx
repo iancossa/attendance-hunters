@@ -22,6 +22,8 @@ import {
   Clock,
   Building
 } from 'lucide-react';
+import { exportToExcel } from '../../utils/exportUtils';
+import { useAppStore } from '../../store';
 
 interface Faculty {
   id: string;
@@ -116,6 +118,7 @@ export const FacultyPage: React.FC = () => {
   const [selectedDepartment, setSelectedDepartment] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const { addNotification } = useAppStore();
 
   const filteredFaculty = mockFaculty.filter(faculty => {
     const matchesSearch = faculty.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -165,7 +168,14 @@ export const FacultyPage: React.FC = () => {
             <p className="text-muted-foreground mt-1">Manage faculty members and academic staff</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2">
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={() => {
+                exportToExcel(filteredFaculty, 'faculty-data');
+                addNotification({ message: 'Faculty data exported successfully', type: 'success' });
+              }}
+            >
               <Filter className="h-4 w-4" />
               Export Data
             </Button>

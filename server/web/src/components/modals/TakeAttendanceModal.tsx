@@ -60,8 +60,13 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
         setTimeLeft(prev => {
           if (prev <= 1) {
             setSessionActive(false);
-            setStep('confirmation');
-            setAttendanceResults({ present: Math.floor(Math.random() * 40) + 30, total: selectedCourseData?.students || 50 });
+            // For hybrid mode, go to review step instead of confirmation
+            if (attendanceMode === 'hybrid') {
+              setStep('review');
+            } else {
+              setStep('confirmation');
+              setAttendanceResults({ present: Math.floor(Math.random() * 40) + 30, total: selectedCourseData?.students || 50 });
+            }
             return 0;
           }
           return prev - 1;
@@ -69,7 +74,7 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [sessionActive, timeLeft, selectedCourseData]);
+  }, [sessionActive, timeLeft, selectedCourseData, attendanceMode]);
 
   const generateQRCode = () => {
     const sessionId = Math.random().toString(36).substring(7);
@@ -191,47 +196,45 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
   if (!isOpen) return null;
 
   return (
-    <div className={`fixed z-50 ${isFullscreen ? 'inset-0 bg-background' : 'inset-0 bg-black/20 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center p-4'}`}>
-      <div className={`${isFullscreen ? 'h-full w-full' : 'bg-background rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden'} flex flex-col`}>
+    <div className={`fixed z-50 ${isFullscreen ? 'inset-0 bg-background' : 'inset-0 bg-black/20 flex items-center justify-center p-4'}`}>
+      <div className={`${isFullscreen ? 'h-full w-full' : 'bg-background rounded-2xl shadow-2xl border border-border w-full max-w-5xl max-h-[95vh] overflow-hidden'} flex flex-col`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Users className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold">
-                Take Attendance {selectedCourseData && `– ${selectedCourseData.name}`}
-              </h2>
-              <p className="text-sm text-muted-foreground">{currentDateTime}</p>
-            </div>
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <div>
+            <h2 className="text-lg font-semibold">
+              Take Attendance {selectedCourseData && `– ${selectedCourseData.name}`}
+            </h2>
+            <p className="text-xs text-muted-foreground">{currentDateTime}</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setIsFullscreen(!isFullscreen)}>
-              {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+          <div className="flex gap-1">
+            <Button variant="ghost" size="sm" onClick={() => setIsFullscreen(!isFullscreen)} className="h-8 w-8 p-0">
+              {isFullscreen ? <Minimize className="h-3 w-3" /> : <Maximize className="h-3 w-3" />}
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleClose}>
-              <X className="h-4 w-4" />
+            <Button variant="ghost" size="sm" onClick={handleClose} className="h-8 w-8 p-0">
+              <X className="h-3 w-3" />
             </Button>
           </div>
         </div>
 
-        <div className={`${isFullscreen ? 'flex-1' : ''} p-6 overflow-y-auto`}>
+        <div className={`${isFullscreen ? 'flex-1' : ''} p-4 overflow-y-auto`}>
           {/* QR Scanner Step */}
           {step === 'scanner' && (
-            <div className="text-center space-y-6">
-              <Card className="border-2 border-dashed border-border">
-                <CardContent className="p-8">
+            <div className="text-center space-y-4">
+              <Card className="border-2 border-dashed border-primary/30 bg-primary/5">
+                <CardContent className="p-6">
                   {isScanning ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       <div className="animate-pulse">
-                        <QrCode className="h-16 w-16 mx-auto text-primary" />
+                        <QrCode className="h-12 w-12 mx-auto text-primary" />
                       </div>
                       <p className="text-sm text-muted-foreground">Scanning QR Code...</p>
+                      <div className="w-32 h-1 bg-muted rounded-full mx-auto overflow-hidden">
+                        <div className="h-full bg-primary rounded-full animate-pulse"></div>
+                      </div>
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                      <QrCode className="h-16 w-16 mx-auto text-muted-foreground" />
+                    <div className="space-y-3">
+                      <QrCode className="h-12 w-12 mx-auto text-muted-foreground" />
                       <p className="text-sm text-muted-foreground">Position QR code within the frame</p>
                     </div>
                   )}
@@ -240,9 +243,8 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
               <Button 
                 onClick={handleScan} 
                 disabled={isScanning}
-                className="w-full"
+                className="w-full h-10"
               >
-                <QrCode className="h-4 w-4 mr-2" />
                 {isScanning ? 'Scanning...' : 'Start Scan'}
               </Button>
             </div>
@@ -250,12 +252,12 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
 
           {/* Step 1: Class & Session Selection */}
           {step === 'selection' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Course</label>
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-muted-foreground">Course</label>
                   <select 
-                    className="w-full p-2 border border-border rounded-md bg-background"
+                    className="w-full p-2 border border-border rounded-lg bg-background text-sm h-9"
                     value={selectedCourse}
                     onChange={(e) => setSelectedCourse(e.target.value)}
                   >
@@ -265,10 +267,10 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
                     ))}
                   </select>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Section/Batch</label>
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-muted-foreground">Section/Batch</label>
                   <select 
-                    className="w-full p-2 border border-border rounded-md bg-background"
+                    className="w-full p-2 border border-border rounded-lg bg-background text-sm h-9"
                     value={selectedSection}
                     onChange={(e) => setSelectedSection(e.target.value)}
                   >
@@ -278,10 +280,10 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
                     ))}
                   </select>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Session Type</label>
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-muted-foreground">Session Type</label>
                   <select 
-                    className="w-full p-2 border border-border rounded-md bg-background"
+                    className="w-full p-2 border border-border rounded-lg bg-background text-sm h-9"
                     value={sessionType}
                     onChange={(e) => setSessionType(e.target.value)}
                   >
@@ -291,18 +293,18 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
                     ))}
                   </select>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Date & Time</label>
-                  <Input value={currentDateTime} readOnly className="bg-muted/50" />
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-muted-foreground">Date & Time</label>
+                  <Input value={currentDateTime} readOnly className="bg-muted/50 text-sm h-9" />
                 </div>
               </div>
               <div className="flex justify-end">
                 <Button 
                   onClick={handleNext}
                   disabled={!selectedCourse || !selectedSection || !sessionType}
-                  className="gap-2"
+                  className="h-9"
                 >
-                  Next <ArrowRight className="h-4 w-4" />
+                  Next
                 </Button>
               </div>
             </div>
@@ -311,42 +313,123 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
           {/* Step 2: Mode Selection */}
           {step === 'mode' && (
             <div className="space-y-6">
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
-                  { id: 'qr', title: 'QR Code Mode', desc: 'Students scan QR code with mobile app', icon: QrCode },
-                  { id: 'manual', title: 'Manual Mode', desc: 'Mark attendance manually from student list', icon: CheckCircle },
-                  { id: 'hybrid', title: 'Hybrid Mode', desc: 'Start with QR, then manual adjustment', icon: Users }
+                  { 
+                    id: 'qr', 
+                    title: 'QR Code Mode', 
+                    desc: 'Students scan QR code with mobile app', 
+                    icon: QrCode,
+                    features: ['Real-time scanning', 'Mobile app integration', 'Automatic marking', 'Live updates'],
+                    color: 'blue'
+                  },
+                  { 
+                    id: 'manual', 
+                    title: 'Manual Mode', 
+                    desc: 'Mark attendance manually from student list', 
+                    icon: CheckCircle,
+                    features: ['Full control', 'Bulk operations', 'Search & filter', 'Roll number input'],
+                    color: 'green'
+                  },
+                  { 
+                    id: 'hybrid', 
+                    title: 'Hybrid Mode', 
+                    desc: 'Start with QR, then manual adjustment', 
+                    icon: Users,
+                    features: ['Best of both', 'QR + Manual', 'Review & edit', 'Flexible workflow'],
+                    color: 'purple'
+                  }
                 ].map(mode => {
                   const Icon = mode.icon;
+                  const isSelected = attendanceMode === mode.id;
                   return (
                     <Card 
                       key={mode.id}
-                      className={`cursor-pointer transition-all hover:shadow-md ${
-                        attendanceMode === mode.id ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-muted/50'
+                      className={`cursor-pointer transition-all hover:shadow-lg transform hover:scale-105 ${
+                        isSelected 
+                          ? `ring-2 ring-${mode.color}-500 bg-gradient-to-br from-${mode.color}-50 to-white dark:from-${mode.color}-950/20 dark:to-background shadow-lg` 
+                          : 'hover:bg-muted/50 hover:shadow-md'
                       }`}
-                      onClick={() => setAttendanceMode(mode.id as AttendanceMode)}
+                      onClick={() => {
+                        setAttendanceMode(mode.id as AttendanceMode);
+                        // Redirect to individual page based on mode
+                        if (mode.id === 'qr') {
+                          window.open('/attendance/qr-mode', '_blank');
+                        } else if (mode.id === 'manual') {
+                          window.open('/attendance/manual-mode', '_blank');
+                        } else if (mode.id === 'hybrid') {
+                          window.open('/attendance/hybrid-mode', '_blank');
+                        }
+                      }}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-3">
-                          <Icon className="h-5 w-5 text-primary" />
-                          <div className="flex-1">
-                            <h3 className="font-medium">{mode.title}</h3>
-                            <p className="text-sm text-muted-foreground">{mode.desc}</p>
-                          </div>
-                          {attendanceMode === mode.id && <CheckCircle className="h-5 w-5 text-primary" />}
+                      <CardContent className="p-6 text-center">
+                        <div className={`p-4 rounded-full mx-auto mb-4 w-16 h-16 flex items-center justify-center ${
+                          isSelected 
+                            ? `bg-${mode.color}-100 dark:bg-${mode.color}-900/30` 
+                            : 'bg-muted'
+                        }`}>
+                          <Icon className={`h-8 w-8 ${
+                            isSelected 
+                              ? `text-${mode.color}-600 dark:text-${mode.color}-400` 
+                              : 'text-muted-foreground'
+                          }`} />
                         </div>
+                        <h3 className="font-bold text-lg mb-2">{mode.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-4">{mode.desc}</p>
+                        <div className="space-y-2">
+                          {mode.features.map((feature, idx) => (
+                            <div key={idx} className="flex items-center justify-center gap-2 text-xs">
+                              <CheckCircle className={`h-3 w-3 ${
+                                isSelected 
+                                  ? `text-${mode.color}-500` 
+                                  : 'text-muted-foreground'
+                              }`} />
+                              <span className={isSelected ? 'font-medium' : 'text-muted-foreground'}>
+                                {feature}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                        {isSelected && (
+                          <div className="mt-4">
+                            <Badge className={`bg-${mode.color}-100 text-${mode.color}-800 dark:bg-${mode.color}-900/50 dark:text-${mode.color}-200`}>
+                              Selected
+                            </Badge>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   );
                 })}
               </div>
-              <div className="flex justify-between">
-                <Button variant="outline" onClick={handleBack} className="gap-2">
-                  <ArrowLeft className="h-4 w-4" /> Back
-                </Button>
-                <Button onClick={handleNext} className="gap-2">
-                  Generate Attendance Session <ArrowRight className="h-4 w-4" />
-                </Button>
+              <div className="text-center space-y-4">
+                <div className="p-4 bg-muted/30 rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    💡 <strong>Tip:</strong> Each mode opens in a dedicated page with specialized features
+                  </p>
+                  <div className="flex justify-center gap-4 text-xs">
+                    <span>🔵 QR Mode: Real-time mobile scanning</span>
+                    <span>🟢 Manual: Full attendance control</span>
+                    <span>🟣 Hybrid: Combined workflow</span>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <Button variant="outline" onClick={handleBack} className="gap-2">
+                    <ArrowLeft className="h-4 w-4" /> Back
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      // Continue with current modal flow or redirect
+                      if (attendanceMode) {
+                        handleNext();
+                      }
+                    }} 
+                    className="gap-2"
+                    disabled={!attendanceMode}
+                  >
+                    Continue in Modal <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           )}
@@ -385,9 +468,15 @@ export const TakeAttendanceModal: React.FC<TakeAttendanceModalProps> = ({ isOpen
                   <Button variant="outline" onClick={generateQRCode} className="gap-2">
                     <RefreshCw className="h-4 w-4" /> Regenerate QR
                   </Button>
-                  <Button variant="outline" onClick={() => setStep('manual')}>
-                    Switch to Manual
-                  </Button>
+                  {attendanceMode === 'hybrid' ? (
+                    <Button variant="outline" onClick={() => setStep('review')}>
+                      Review & Edit
+                    </Button>
+                  ) : (
+                    <Button variant="outline" onClick={() => setStep('manual')}>
+                      Switch to Manual
+                    </Button>
+                  )}
                 </div>
               </div>
 

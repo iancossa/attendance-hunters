@@ -7,10 +7,16 @@ import { StudentsPage } from './pages/students/StudentsPage';
 import { ReportsPage } from './pages/reports/ReportsPage';
 import { LeaderboardPage } from './pages/leaderboard/LeaderboardPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
+import { FacultyPage } from './pages/faculty/FacultyPage';
+import { QRModePage } from './pages/attendance/QRModePage';
+import { ManualModePage } from './pages/attendance/ManualModePage';
+import { HybridModePage } from './pages/attendance/HybridModePage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { useAuth } from './hooks/useAuth';
 import { ROUTES } from './constants';
 import { Loading } from './components/ui/loading';
+import { NotificationContainer } from './components/ui/notification';
+import { ErrorBoundary } from './components/ui/error-boundary';
 
 function App() {
   const { isAuthenticated, loading } = useAuth();
@@ -32,8 +38,10 @@ function App() {
   }
 
   return (
-    <div className="animate-in fade-in duration-300">
-      <Router>
+    <ErrorBoundary>
+      <div className="animate-in fade-in duration-300">
+        <NotificationContainer />
+        <Router>
         <Routes>
           <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
           <Route path={ROUTES.ATTENDANCE} element={<AttendancePage />} />
@@ -42,9 +50,14 @@ function App() {
           <Route path={ROUTES.REPORTS} element={<ReportsPage />} />
           <Route path={ROUTES.LEADERBOARD} element={<LeaderboardPage />} />
           <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+          <Route path="/faculty" element={<FacultyPage />} />
+          <Route path="/attendance/qr-mode" element={<QRModePage />} />
+          <Route path="/attendance/manual-mode" element={<ManualModePage />} />
+          <Route path="/attendance/hybrid-mode" element={<HybridModePage />} />
         </Routes>
-      </Router>
-    </div>
+        </Router>
+      </div>
+    </ErrorBoundary>
   );
 }
 

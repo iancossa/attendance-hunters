@@ -6,9 +6,13 @@ import { Button } from '../../components/ui/button';
 import { Progress } from '../../components/ui/progress';
 import { TakeAttendanceModal } from '../../components/modals/TakeAttendanceModal';
 import { TrendingUp, Users, Calendar, AlertTriangle, Plus } from 'lucide-react';
+import { AttendanceChart, ClassPerformanceChart } from '../../components/charts';
+import { useAttendance } from '../../hooks/useAttendance';
+import { TableSkeleton } from '../../components/ui/table-skeleton';
 
 export const Dashboard: React.FC = () => {
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
+  const { summary } = useAttendance();
   return (
     <Layout>
       <div className="space-y-6">
@@ -33,7 +37,7 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Today's Attendance</p>
-                  <div className="text-3xl font-bold text-primary mt-2">85%</div>
+                  <div className="text-3xl font-bold text-primary mt-2">{summary?.todayAttendance || 85}%</div>
                   <p className="text-xs text-green-600 dark:text-green-400 mt-1">↗ +2% from yesterday</p>
                 </div>
                 <div className="p-3 bg-primary/10 rounded-full">
@@ -48,8 +52,8 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Present Students</p>
-                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">342</div>
-                  <p className="text-xs text-muted-foreground mt-1">out of 402 total</p>
+                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">{summary?.presentStudents || 342}</div>
+                  <p className="text-xs text-muted-foreground mt-1">out of {summary?.totalStudents || 402} total</p>
                 </div>
                 <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
                   <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -78,7 +82,7 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Alerts</p>
-                  <div className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">5</div>
+                  <div className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">{summary?.alerts || 5}</div>
                   <p className="text-xs text-muted-foreground mt-1">Low attendance warnings</p>
                 </div>
                 <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
@@ -89,6 +93,48 @@ export const Dashboard: React.FC = () => {
           </Card>
         </div>
         
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                </div>
+                Weekly Attendance Trend
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AttendanceChart data={[
+                { day: 'Mon', attendance: 92 },
+                { day: 'Tue', attendance: 88 },
+                { day: 'Wed', attendance: 85 },
+                { day: 'Thu', attendance: 90 },
+                { day: 'Fri', attendance: 87 }
+              ]} />
+            </CardContent>
+          </Card>
+          
+          <Card className="shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Users className="h-4 w-4 text-primary" />
+                </div>
+                Class Performance
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ClassPerformanceChart data={[
+                { class: 'CS101', attendance: 94 },
+                { class: 'MATH201', attendance: 90 },
+                { class: 'ENG101', attendance: 83 },
+                { class: 'PHY101', attendance: 78 }
+              ]} />
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Recent Activity & Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="shadow-sm">
